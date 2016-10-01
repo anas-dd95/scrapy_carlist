@@ -10,12 +10,23 @@ class SpiderCarlist(scrapy.Spider):
     name = 'carlist' # spider name
 
     # list of site to crawl (top-level, first page)
-    start_urls = ['http://www.carlist.my/car/toyota']
+    start_urls = [
+        'http://www.carlist.my/car/toyota/',
+        'http://www.carlist.my/car/proton/',
+        'http://www.carlist.my/car/mercedes-benz/',
+        'http://www.carlist.my/car/perodua/',
+        'http://www.carlist.my/car/nissan/',
+        'http://www.carlist.my/car/honda/',
+        'http://www.carlist.my/car/bmw/',
+        'http://www.carlist.my/car/hyundai/',
+        'http://www.carlist.my/car/audi/',
+        'http://www.carlist.my/car/mitsubishi/'
+    ] # total = 10
 
     def parse(self, response):
         # total page to crawl = COUNT
-        # maximum page per manufacturer = COUNT / len(MANUFACTURER)
-        if (COUNT == 10):
+        # maximum page per manufacturer = COUNT / total start_urls)
+        if (COUNT == 80): #  8 pages * 10 start_urls = 80 counts
             return
 
         # get top-level of list of car pages
