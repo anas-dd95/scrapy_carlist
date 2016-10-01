@@ -25,8 +25,9 @@ class SpiderCarlist(scrapy.Spider):
 
     def parse(self, response):
         # total page to crawl = COUNT
-        # maximum page per manufacturer = COUNT / total start_urls)
-        if (COUNT == 80): #  8 pages * 10 start_urls = 80 counts
+        # maximum page per maker = COUNT / total start_urls)
+        # 1 page = 25 cars per maker, 300 cars per maker = 12 pages
+        if (COUNT == 120): #  12 pages * 10 start_urls = 120 counts
             return
 
         # get top-level of list of car pages
