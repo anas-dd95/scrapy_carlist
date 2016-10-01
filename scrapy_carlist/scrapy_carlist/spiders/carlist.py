@@ -1,21 +1,17 @@
 #!/usr/bin/python
 
 import scrapy
+from itertools import izip
 
 # global variable
 COUNT = 0
-BODY_TYPE = [
-    "Converible", "Coupe", "Hatchback", "Lorry", "MPV",
-    "Pickup Truck", "SUV", "Sedan", "Van", "Wagon"
-]
-MANUFACTURER = ["Toyota", "Proton"]
 
-class SpiderCarlist(scarpy.Spider):
+class SpiderCarlist(scrapy.Spider):
     name = 'carlist' # spider name
 
     # list of site to crawl (top-level, first page)
     # respective to global list MANUFACTURER
-    start_urls = []
+    start_urls = ['http://www.carlist.my/car/toyota']
 
     def parse(self, response):
         # total page to crawl = COUNT
@@ -23,15 +19,32 @@ class SpiderCarlist(scarpy.Spider):
         if (COUNT == 10):
             return
 
+        # get top-level of list of car pages
         top = response.css('article div.grid')
 
-        for ls in top:
-            title = ls.css('h2 a::text').extract()
-            price = ls.css('p.listing__price::text').extract()
-            spec = ls.css('div.listing__spec::text').extract()
+        # follow link to car pages
+        for href in top.css('h2 a::attr(href)').extract():
+            yield scrapy.Request(url=response.urljoin(href), callback=self.parse_car)
 
-            yield {
-                'title': title,
-                'price': price,
-                'spec': spec
-            }
+    # get data for each page and extract
+    def parse_car(self, response):
+        # get label for car details
+        label = response.css('div.listing__key-listing__list p span.list-item__title::text').extract()
+        # get value for car details
+        value = response.css('div.listing__key-listing__list p span.float--right::text').extract()
+
+        # combine both label and value to dictionary object
+        data = dict(izip(label, value));
+
+        # extract relevant details of car
+        yield {
+            'Make': data['Make'],
+            'Model': data['Model'],
+            'Year': data['Year'],
+            'Engine Capacity': data['Engine Capacity'],
+            'Transmission': data['Transmission'],
+            'Seat Capacity': data['Seat Capacity'],
+            'Mileage': data['Mileage'],
+            'Car type': data['Car type'],
+            'Colour': data['Colour']
+        }
